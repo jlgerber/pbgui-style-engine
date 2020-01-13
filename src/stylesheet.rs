@@ -1,6 +1,6 @@
 use hsluv::{hex_to_rgb, rgb_to_hex};
-use serde::ser::{Serialize as SerializeTrait, SerializeStruct, Serializer};
-use serde_derive::{Deserialize, Serialize};
+use serde::ser::{Serialize as SerializeTrait, Serializer};
+use std::fmt;
 
 /// Color represnetations in qss
 #[derive(Debug, PartialEq)]
@@ -164,15 +164,15 @@ impl SerializeTrait for Color {
     }
 }
 
-impl ToString for Color {
-    fn to_string(&self) -> String {
+impl fmt::Display for Color {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         match self {
-            Self::Rgb { r, g, b } => format!("rgb({}, {}, {})", r, g, b),
-            Self::Rgba { r, g, b, a } => format!("rgba({}, {}, {}, {})", r, g, b, a),
+            Self::Rgb { r, g, b } => write!(f, "rgb({}, {}, {})", r, g, b),
+            Self::Rgba { r, g, b, a } => write!(f, "rgba({}, {}, {}, {})", r, g, b, a),
             Self::Hex(ref val) => {
                 // convert back and forth to keep it valid
                 let color = hex_to_rgb(val);
-                rgb_to_hex((color.0, color.1, color.2))
+                write!(f, "{}", rgb_to_hex((color.0, color.1, color.2)))
             }
             Self::Hsl(h, s, l) => {
                 let sat = if s < &0.0 {
@@ -189,7 +189,7 @@ impl ToString for Color {
                 } else {
                     *l
                 };
-                format!("hsl({}, {}%, {}%)", h, sat, light)
+                write!(f, "hsl({}, {}%, {}%)", h, sat, light)
             }
             Self::Hsla(h, s, l, a) => {
                 let sat = if s < &0.0 {
@@ -213,149 +213,149 @@ impl ToString for Color {
                 } else {
                     *a
                 };
-                format!("hsla({}, {}%, {}%, {})", h, sat, light, alpha)
+                write!(f, "hsla({}, {}%, {}%, {})", h, sat, light, alpha)
             }
-            Self::Red => "red".to_string(),
-            Self::Green => "green".to_string(),
-            Self::Blue => "blue".to_string(),
-            Self::Grey => "grey".to_string(),
-            Self::LightGrey => "lightgrey".to_string(),
-            Self::DarkGrey => "darkgrey".to_string(),
-            Self::AliceBlue => "aliceblue".to_string(),
-            Self::AntiqueWhite => "antiquewhite".to_string(),
-            Self::Aqua => "aqua".to_string(),
-            Self::Aquamarine => "aquamarine".to_string(),
-            Self::Azure => "azure".to_string(),
-            Self::Beige => "beige".to_string(),
-            Self::Bisque => "bisque".to_string(),
-            Self::Black => "black".to_string(),
-            Self::BlanchedAlmond => "blanchedalmond".to_string(),
-            Self::BlueViolet => "blueviolet".to_string(),
-            Self::Brown => "brown".to_string(),
-            Self::BurlyWood => "burlywood".to_string(),
-            Self::CadetBlue => "cadetblue".to_string(),
-            Self::Chartreuse => "chartreuse".to_string(),
-            Self::Chocolate => "chocolate".to_string(),
-            Self::Coral => "coral".to_string(),
-            Self::ConrflowerBlue => "cornflowerblue".to_string(),
-            Self::Cornsilk => "cornsilk".to_string(),
-            Self::Crimson => "crimson".to_string(),
-            Self::Cyan => "cyan".to_string(),
-            Self::DarkBlue => "darkblue".to_string(),
-            Self::DarkCyan => "darkcyan".to_string(),
-            Self::DarkGlodenRod => "darkgoldenrod".to_string(),
-            Self::DarkGray => "darkgray".to_string(),
-            Self::DarkGreen => "darkgreen".to_string(),
-            Self::DarkOrchid => "darkorchid".to_string(),
-            Self::DarkRed => "darkred".to_string(),
-            Self::DarkSalmon => "darksalmon".to_string(),
-            Self::DarkSeaGreen => "darkseagreen".to_string(),
-            Self::DarkSlateBlue => "darkslateblue".to_string(),
-            Self::DarkSlateGray => "darkslategray".to_string(),
-            Self::DarkSlateGrey => "darkslategrey".to_string(),
-            Self::DarkTurquoise => "darkturquoise".to_string(),
-            Self::DarkViolet => "darkviolet".to_string(),
-            Self::DeepPink => "deeppink".to_string(),
-            Self::DeepSkyBlue => "deepskyblue".to_string(),
-            Self::DimGray => "dimgray".to_string(),
-            Self::DimGrey => "dimgrey".to_string(),
-            Self::DodgerBlue => "dodgerblue".to_string(),
-            Self::FireBrick => "firebrick".to_string(),
-            Self::FloralWhite => "floralwhite".to_string(),
-            Self::ForestGreen => "forestgreen".to_string(),
-            Self::Fuchsia => "fuchsia".to_string(),
-            Self::Gainsboro => "gainsboro".to_string(),
-            Self::GhostWhite => "ghostwhite".to_string(),
-            Self::Gold => "gold".to_string(),
-            Self::GoldenRod => "goldenrod".to_string(),
-            Self::GreenYellow => "greenyellow".to_string(),
-            Self::HoneyDew => "honeydew".to_string(),
-            Self::HotPink => "hotpink".to_string(),
-            Self::IndiaRed => "indiared".to_string(),
-            Self::Indigo => "indigo".to_string(),
-            Self::Ivory => "ivory".to_string(),
-            Self::Khaki => "khaki".to_string(),
-            Self::Lavender => "lavender".to_string(),
-            Self::LavenderBlush => "lavenderblush".to_string(),
-            Self::LawnGreen => "lawngreen".to_string(),
-            Self::LemonChiffon => "lemonchiffon".to_string(),
-            Self::LightBlue => "lightblue".to_string(),
-            Self::LightCoral => "lightcoral".to_string(),
-            Self::LightCyan => "lightcyan".to_string(),
-            Self::LightGoldenRodYellow => "lightgoldenrodyellow".to_string(),
-            Self::LightGreen => "lightgreen".to_string(),
-            Self::LightPink => "lightpink".to_string(),
-            Self::LightSalmon => "lightsalmon".to_string(),
-            Self::LightSeaGreen => "lightseagreen".to_string(),
-            Self::LightSkyBlue => "lightskyblue".to_string(),
-            Self::LightSlateGray => "lightslategray".to_string(),
-            Self::LightSlateGrey => "lightslategrey".to_string(),
-            Self::LightSteelBlue => "lightsteelblue".to_string(),
-            Self::LightYellow => "lightyellow".to_string(),
-            Self::Lime => "lime".to_string(),
-            Self::LimeGreen => "limegreen".to_string(),
-            Self::Linen => "linen".to_string(),
-            Self::Magenta => "magenta".to_string(),
-            Self::Maroon => "maroon".to_string(),
-            Self::MediumAquaMarine => "mediumaquamarine".to_string(),
-            Self::MediumBlue => "mediumblue".to_string(),
-            Self::MediumOrchid => "medumorchid".to_string(),
-            Self::MediumPurple => "mediumpurple".to_string(),
-            Self::MediumSeaGreen => "mediumseagreen".to_string(),
-            Self::MediumSlateBlue => "mediumslateblue".to_string(),
-            Self::MediumSpringGreen => "mediumspringgreen".to_string(),
-            Self::MediumTurquoise => "mediumturquoise".to_string(),
-            Self::MediumVioletRed => "mediumvioletred".to_string(),
-            Self::MidnightBlue => "mednightblue".to_string(),
-            Self::MintCream => "mintcream".to_string(),
-            Self::MistyRose => "mistyrose".to_string(),
-            Self::Moccasin => "moccasin".to_string(),
-            Self::NavajoWhite => "navajowhite".to_string(),
-            Self::Navy => "navy".to_string(),
-            Self::OldLace => "oldlace".to_string(),
-            Self::Olive => "olive".to_string(),
-            Self::OliveDrab => "olivedrab".to_string(),
-            Self::Orange => "orange".to_string(),
-            Self::OrangeRed => "orangered".to_string(),
-            Self::Orchid => "orchid".to_string(),
-            Self::PaleGoldenRod => "palegoldenrod".to_string(),
-            Self::PaleGreen => "palegreen".to_string(),
-            Self::PaleTurquoise => "paleturquoise".to_string(),
-            Self::PaleVioletRed => "palevioletred".to_string(),
-            Self::PapayaWhip => "papayawhip".to_string(),
-            Self::PeachPuff => "peachpuff".to_string(),
-            Self::Peru => "peru".to_string(),
-            Self::Pink => "pink".to_string(),
-            Self::Plum => "plum".to_string(),
-            Self::PowderBlue => "powderblue".to_string(),
-            Self::Purple => "purple".to_string(),
-            Self::RebeccaPurple => "rebeccapurple".to_string(),
-            Self::Rosybrown => "rosybrown".to_string(),
-            Self::SaddleBrown => "saddlebrown".to_string(),
-            Self::Salmon => "salmon".to_string(),
-            Self::SandyBrown => "sandybrown".to_string(),
-            Self::SeaGreen => "seagreen".to_string(),
-            Self::SeaShell => "seashell".to_string(),
-            Self::Sienna => "sienna".to_string(),
-            Self::Silver => "silver".to_string(),
-            Self::SkyBlue => "skyblue".to_string(),
-            Self::SlateBlue => "slateblue".to_string(),
-            Self::SlateGray => "slategray".to_string(),
-            Self::SlateGrey => "slategrey".to_string(),
-            Self::Snow => "snow".to_string(),
-            Self::SpringGreen => "springgreen".to_string(),
-            Self::SteelBlue => "steelblue".to_string(),
-            Self::Tan => "tan".to_string(),
-            Self::Teal => "teal".to_string(),
-            Self::Thistle => "thistle".to_string(),
-            Self::Tomato => "tomato".to_string(),
-            Self::Turquoise => "turquoise".to_string(),
-            Self::Violet => "violet".to_string(),
-            Self::Wheat => "wheat".to_string(),
-            Self::White => "white".to_string(),
-            Self::WhiteSmoke => "whitesmoke".to_string(),
-            Self::Yellow => "yellow".to_string(),
-            Self::YellowGreen => "yellowgreen".to_string(),
+            Self::Red => write!(f, "red"),
+            Self::Green => write!(f, "green"),
+            Self::Blue => write!(f, "blue"),
+            Self::Grey => write!(f, "grey"),
+            Self::LightGrey => write!(f, "lightgrey"),
+            Self::DarkGrey => write!(f, "darkgrey"),
+            Self::AliceBlue => write!(f, "aliceblue"),
+            Self::AntiqueWhite => write!(f, "antiquewhite"),
+            Self::Aqua => write!(f, "aqua"),
+            Self::Aquamarine => write!(f, "aquamarine"),
+            Self::Azure => write!(f, "azure"),
+            Self::Beige => write!(f, "beige"),
+            Self::Bisque => write!(f, "bisque"),
+            Self::Black => write!(f, "black"),
+            Self::BlanchedAlmond => write!(f, "blanchedalmond"),
+            Self::BlueViolet => write!(f, "blueviolet"),
+            Self::Brown => write!(f, "brown"),
+            Self::BurlyWood => write!(f, "burlywood"),
+            Self::CadetBlue => write!(f, "cadetblue"),
+            Self::Chartreuse => write!(f, "chartreuse"),
+            Self::Chocolate => write!(f, "chocolate"),
+            Self::Coral => write!(f, "coral"),
+            Self::ConrflowerBlue => write!(f, "cornflowerblue"),
+            Self::Cornsilk => write!(f, "cornsilk"),
+            Self::Crimson => write!(f, "crimson"),
+            Self::Cyan => write!(f, "cyan"),
+            Self::DarkBlue => write!(f, "darkblue"),
+            Self::DarkCyan => write!(f, "darkcyan"),
+            Self::DarkGlodenRod => write!(f, "darkgoldenrod"),
+            Self::DarkGray => write!(f, "darkgray"),
+            Self::DarkGreen => write!(f, "darkgreen"),
+            Self::DarkOrchid => write!(f, "darkorchid"),
+            Self::DarkRed => write!(f, "darkred"),
+            Self::DarkSalmon => write!(f, "darksalmon"),
+            Self::DarkSeaGreen => write!(f, "darkseagreen"),
+            Self::DarkSlateBlue => write!(f, "darkslateblue"),
+            Self::DarkSlateGray => write!(f, "darkslategray"),
+            Self::DarkSlateGrey => write!(f, "darkslategrey"),
+            Self::DarkTurquoise => write!(f, "darkturquoise"),
+            Self::DarkViolet => write!(f, "darkviolet"),
+            Self::DeepPink => write!(f, "deeppink"),
+            Self::DeepSkyBlue => write!(f, "deepskyblue"),
+            Self::DimGray => write!(f, "dimgray"),
+            Self::DimGrey => write!(f, "dimgrey"),
+            Self::DodgerBlue => write!(f, "dodgerblue"),
+            Self::FireBrick => write!(f, "firebrick"),
+            Self::FloralWhite => write!(f, "floralwhite"),
+            Self::ForestGreen => write!(f, "forestgreen"),
+            Self::Fuchsia => write!(f, "fuchsia"),
+            Self::Gainsboro => write!(f, "gainsboro"),
+            Self::GhostWhite => write!(f, "ghostwhite"),
+            Self::Gold => write!(f, "gold"),
+            Self::GoldenRod => write!(f, "goldenrod"),
+            Self::GreenYellow => write!(f, "greenyellow"),
+            Self::HoneyDew => write!(f, "honeydew"),
+            Self::HotPink => write!(f, "hotpink"),
+            Self::IndiaRed => write!(f, "indiared"),
+            Self::Indigo => write!(f, "indigo"),
+            Self::Ivory => write!(f, "ivory"),
+            Self::Khaki => write!(f, "khaki"),
+            Self::Lavender => write!(f, "lavender"),
+            Self::LavenderBlush => write!(f, "lavenderblush"),
+            Self::LawnGreen => write!(f, "lawngreen"),
+            Self::LemonChiffon => write!(f, "lemonchiffon"),
+            Self::LightBlue => write!(f, "lightblue"),
+            Self::LightCoral => write!(f, "lightcoral"),
+            Self::LightCyan => write!(f, "lightcyan"),
+            Self::LightGoldenRodYellow => write!(f, "lightgoldenrodyellow"),
+            Self::LightGreen => write!(f, "lightgreen"),
+            Self::LightPink => write!(f, "lightpink"),
+            Self::LightSalmon => write!(f, "lightsalmon"),
+            Self::LightSeaGreen => write!(f, "lightseagreen"),
+            Self::LightSkyBlue => write!(f, "lightskyblue"),
+            Self::LightSlateGray => write!(f, "lightslategray"),
+            Self::LightSlateGrey => write!(f, "lightslategrey"),
+            Self::LightSteelBlue => write!(f, "lightsteelblue"),
+            Self::LightYellow => write!(f, "lightyellow"),
+            Self::Lime => write!(f, "lime"),
+            Self::LimeGreen => write!(f, "limegreen"),
+            Self::Linen => write!(f, "linen"),
+            Self::Magenta => write!(f, "magenta"),
+            Self::Maroon => write!(f, "maroon"),
+            Self::MediumAquaMarine => write!(f, "mediumaquamarine"),
+            Self::MediumBlue => write!(f, "mediumblue"),
+            Self::MediumOrchid => write!(f, "medumorchid"),
+            Self::MediumPurple => write!(f, "mediumpurple"),
+            Self::MediumSeaGreen => write!(f, "mediumseagreen"),
+            Self::MediumSlateBlue => write!(f, "mediumslateblue"),
+            Self::MediumSpringGreen => write!(f, "mediumspringgreen"),
+            Self::MediumTurquoise => write!(f, "mediumturquoise"),
+            Self::MediumVioletRed => write!(f, "mediumvioletred"),
+            Self::MidnightBlue => write!(f, "mednightblue"),
+            Self::MintCream => write!(f, "mintcream"),
+            Self::MistyRose => write!(f, "mistyrose"),
+            Self::Moccasin => write!(f, "moccasin"),
+            Self::NavajoWhite => write!(f, "navajowhite"),
+            Self::Navy => write!(f, "navy"),
+            Self::OldLace => write!(f, "oldlace"),
+            Self::Olive => write!(f, "olive"),
+            Self::OliveDrab => write!(f, "olivedrab"),
+            Self::Orange => write!(f, "orange"),
+            Self::OrangeRed => write!(f, "orangered"),
+            Self::Orchid => write!(f, "orchid"),
+            Self::PaleGoldenRod => write!(f, "palegoldenrod"),
+            Self::PaleGreen => write!(f, "palegreen"),
+            Self::PaleTurquoise => write!(f, "paleturquoise"),
+            Self::PaleVioletRed => write!(f, "palevioletred"),
+            Self::PapayaWhip => write!(f, "papayawhip"),
+            Self::PeachPuff => write!(f, "peachpuff"),
+            Self::Peru => write!(f, "peru"),
+            Self::Pink => write!(f, "pink"),
+            Self::Plum => write!(f, "plum"),
+            Self::PowderBlue => write!(f, "powderblue"),
+            Self::Purple => write!(f, "purple"),
+            Self::RebeccaPurple => write!(f, "rebeccapurple"),
+            Self::Rosybrown => write!(f, "rosybrown"),
+            Self::SaddleBrown => write!(f, "saddlebrown"),
+            Self::Salmon => write!(f, "salmon"),
+            Self::SandyBrown => write!(f, "sandybrown"),
+            Self::SeaGreen => write!(f, "seagreen"),
+            Self::SeaShell => write!(f, "seashell"),
+            Self::Sienna => write!(f, "sienna"),
+            Self::Silver => write!(f, "silver"),
+            Self::SkyBlue => write!(f, "skyblue"),
+            Self::SlateBlue => write!(f, "slateblue"),
+            Self::SlateGray => write!(f, "slategray"),
+            Self::SlateGrey => write!(f, "slategrey"),
+            Self::Snow => write!(f, "snow"),
+            Self::SpringGreen => write!(f, "springgreen"),
+            Self::SteelBlue => write!(f, "steelblue"),
+            Self::Tan => write!(f, "tan"),
+            Self::Teal => write!(f, "teal"),
+            Self::Thistle => write!(f, "thistle"),
+            Self::Tomato => write!(f, "tomato"),
+            Self::Turquoise => write!(f, "turquoise"),
+            Self::Violet => write!(f, "violet"),
+            Self::Wheat => write!(f, "wheat"),
+            Self::White => write!(f, "white"),
+            Self::WhiteSmoke => write!(f, "whitesmoke"),
+            Self::Yellow => write!(f, "yellow"),
+            Self::YellowGreen => write!(f, "yellowgreen"),
         }
     }
 }
@@ -368,11 +368,11 @@ pub enum Size {
     Em(u8),
 }
 
-impl ToString for Size {
-    fn to_string(&self) -> String {
+impl fmt::Display for Size {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         match self {
-            Self::Px(val) => format!("{}px", val),
-            Self::Em(val) => format!("{}em", val),
+            Self::Px(val) => write!(f, "{}px", val),
+            Self::Em(val) => write!(f, "{}em", val),
         }
     }
 }
@@ -395,10 +395,10 @@ pub enum Size4 {
     Px(u8, u8, u8, u8),
 }
 
-impl ToString for Size4 {
-    fn to_string(&self) -> String {
+impl fmt::Display for Size4 {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         match self {
-            Self::Px(a, b, c, d) => format!("{}px {}px {}px {}px", a, b, c, d),
+            Self::Px(a, b, c, d) => write!(f, "{}px {}px {}px {}px", a, b, c, d),
         }
     }
 }
@@ -440,40 +440,41 @@ impl SerializeTrait for Border {
     }
 }
 
-impl ToString for Border {
-    fn to_string(&self) -> String {
+impl fmt::Display for Border {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         match self {
             Self::Dot { size, color } => {
-                format!("{} dotted {}", size.to_string(), color.to_string())
+                write!(f, "{} dotted {}", size.to_string(), color.to_string())
             }
             Self::Dash { size, color } => {
-                format!("{} dashed {}", size.to_string(), color.to_string())
+                write!(f, "{} dashed {}", size.to_string(), color.to_string())
             }
             Self::Solid { size, color } => {
-                format!("{} solid {}", size.to_string(), color.to_string())
+                write!(f, "{} solid {}", size.to_string(), color.to_string())
             }
             Self::Double { size, color } => {
-                format!("{} double {}", size.to_string(), color.to_string())
+                write!(f, "{} double {}", size.to_string(), color.to_string())
             }
             Self::Groove { size, color } => {
-                format!("{} groove {}", size.to_string(), color.to_string())
+                write!(f, "{} groove {}", size.to_string(), color.to_string())
             }
             Self::Ridge { size, color } => {
-                format!("{} ridge {}", size.to_string(), color.to_string())
+                write!(f, "{} ridge {}", size.to_string(), color.to_string())
             }
             Self::Inset { size, color } => {
-                format!("{} inset {}", size.to_string(), color.to_string())
+                write!(f, "{} inset {}", size.to_string(), color.to_string())
             }
             Self::Outset { size, color } => {
-                format!("{} outset {}", size.to_string(), color.to_string())
+                write!(f, "{} outset {}", size.to_string(), color.to_string())
             }
-            Self::Mix { size, color } => format!(
+            Self::Mix { size, color } => write!(
+                f,
                 "{} dotted dahsed solid double {}",
                 size.to_string(),
                 color.to_string()
             ),
-            Self::None => "none".to_string(),
-            Self::Hidden => "hidden".to_string(),
+            Self::None => write!(f, "none"),
+            Self::Hidden => write!(f, "hidden"),
         }
     }
 }
